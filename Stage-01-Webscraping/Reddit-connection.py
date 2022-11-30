@@ -1,4 +1,3 @@
-
 import praw
 import pymongo
 from pymongo import MongoClient
@@ -6,12 +5,13 @@ import json
 
 # MongoDB connection string
 client = MongoClient('mongodb+srv://jpresto:sx67Lw3PFxJ9zkAw@cluster0.ot7fte8.mongodb.net/test')
-#db = client['reddit_db']
+
 
 # Reddit credentials
 with open('credentials.txt', 'r') as f:
     credentials_data = f.read()
 credentials = json.loads(credentials_data)
+
 
 # Accessing the reddit api
 reddit = praw.Reddit(
@@ -29,10 +29,11 @@ subreddit_name = 'spotify'
 for submission in reddit.subreddit(subreddit_name).hot(limit=10):
     print(submission.title)
 
+
 # Test connection to a MongoDB collection from Python
 from pymongo import MongoClient
 
-# Create a method to connect to MongoDB collection
+# Create a method to connect to a MongoDB collection
 def connect_mongo(database_name, collection_name):
     """
     Input:
@@ -51,7 +52,37 @@ def connect_mongo(database_name, collection_name):
     collections = db[collection_name]
     return collections
 
-
+# connect to db instance and fetch 10 records
 mycollection = connect_mongo("sample_geospatial", "shipwrecks")
-record = mycollection.find_one()
-print(record)
+records = mycollection.find().limit(10)
+for doc in records:
+    #Print each document
+    print(doc)
+
+# connect to db instance and fetch 5 records using filters
+mycollection = connect_mongo("sample_geospatial", "shipwrecks")
+records = mycollection.find({'feature_type': 'Wrecks - Visible'}).limit(5)
+
+for doc in records:
+    #Print each document
+    print(doc)
+
+
+# connect to db instance, insert a record, then output updated collection list
+mycollection = connect_mongo("test_database", "posts")
+
+'''
+import datetime
+post = {"author": "Chris",
+        "text": "My third blog post!",
+        "tags": ["mongodb", "python", "pymongo"],
+        "date": datetime.datetime.utcnow()}
+        
+mycollection.insert_one(post)
+'''
+
+
+records = mycollection.find().limit(10)
+for doc in records:
+    #Print each document
+    print(doc)
